@@ -1,7 +1,16 @@
-import { Component, OnInit, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@ionic-native/native-geocoder/ngx';
-
+import {
+  GoogleMaps,
+  GoogleMap,
+  GoogleMapsEvent,
+  GoogleMapOptions,
+  CameraPosition,
+  MarkerOptions,
+  Marker,
+  Environment, Geocoder, GoogleMapsAnimation, ILatLng
+} from '@ionic-native/google-maps';
 import { ModalController, AlertController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { map, switchMap } from 'rxjs/operators';
@@ -33,13 +42,20 @@ export class RidePage implements OnInit {
   destinationAddress: any;
   destinationLongtitude: any;
   destinationLattitude: any;
+  search: string = '';
+  googleAutoComplete = new google.maps.places.AutocompleteService();
+  searchResult = new Array<any>();
+  originMaster = Marker;
+  destination: any;
+  googleDirectionService = new google.maps.DirectionsService();
   constructor(
     private geolocation: Geolocation,
     private nativeGeocoder: NativeGeocoder,
     private modalCtrl: ModalController,
     private http: HttpClient,
     public actionSheetController: ActionSheetController,
-    public alertCtrl: AlertController
+    public alertCtrl: AlertController,
+    public ngZone: NgZone
   ) {
     this.fetchCurrentAddress = false;
     this.fetchPickupAddress = false;
@@ -336,5 +352,55 @@ export class RidePage implements OnInit {
   }
   callback(response, status) {
     console.log('response ' + JSON.stringify(response));
+  }
+  searchLocation() {
+    console.log('search' + this.search);
+    if(!this.search.trim().length) return;
+    this.googleAutoComplete.getPlacePredictions({input: this.search}, prediction => {
+      this.ngZone.run(() => {
+        this.searchResult = prediction;
+      })
+    })
+  }
+ async calcRoute(result: any){
+    console.log('result' + JSON.stringify(result));
+    this.search = '';
+    this.destination = result;
+    var geocoder = new google.maps.Geocoder();
+    const info: any = await geocoder.geocode({address: this.destination.description},
+      function(result, status) {
+        console.log(result );
+        console.log(status ); 
+      });
+    console.log(info);
+    // let markerDestination: Marker = this.map.addMarker.addMarkerSync({
+    //   title: this.destination.description,
+    //   icon: '#000',
+    //   animation: GoogleMapsAnimation.DROP,
+    //   position: info[0].position
+    // });
+    // this.googleDirectionService.route({
+    //   origin: this.originMaster.getPosition(),
+    //   destination: markerDestination.getPosition(),
+    //   travelMode: 'DRIVING'
+    // // tslint:disable-next-line: no-shadowed-variable
+    // }, async result => {
+    //   console.log(result)
+    //   const points = new Array<ILatLng>();
+    //   const route = result.route[0].overview_path;
+    //   // tslint:disable-next-line: no-unused-expression
+    //   for (let i = 0; i < result.length; i++) {
+    //     points[i] = {
+    //       lat: route[i].lat(),
+    //       lng: route[i].lng()
+    //     };
+    //   }
+    //   this.map.addPolyline({
+    //     points: [this.originMaster.getPosition(), markerDestination.getPosition()],
+    //     color: '#000',
+    //     width: 3
+    //   });
+    //   this.map.moveCamera({target: points});
+    // });
   }
 }

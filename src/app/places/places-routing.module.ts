@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-
 import { PlacesPage } from './places.page';
 
 const routes: Routes = [
@@ -51,6 +50,15 @@ const routes: Routes = [
         ]
       },
       {
+        path: 'searchride',
+        children: [
+          {
+            path: '',
+            loadChildren: './searchride/searchride.module#SearchridePageModule'
+          }
+        ]
+      },
+      {
         path: '',
         redirectTo: '/places/tabs/discover',
         pathMatch: 'full'
@@ -62,7 +70,9 @@ const routes: Routes = [
     redirectTo: '/places/tabs/discover',
     pathMatch: 'full'
   },
-  { path: 'ride', loadChildren: './ride/ride.module#RidePageModule' }
+  { path: 'ride', loadChildren: './ride/ride.module#RidePageModule' },
+  { path: 'search-ride', loadChildren: './search-ride/search-ride.module#SearchRidePageModule' },
+  { path: 'searchride', loadChildren: './searchride/searchride.module#SearchridePageModule' }
 ];
 
 @NgModule({

@@ -28,8 +28,13 @@
   </ion-text>
 </ion-item>
   <div class="map-wrapper">
-      <ion-searchbar  showCancelButton="always"></ion-searchbar>
-    <div #map id="map">
+      <ion-searchbar [(ngModel)]="search" (ionChange)="searchLocation()"  placeholder="Filter Schedules"></ion-searchbar>
+    <ion-list [hidden]="!search.length">
+      <ion-item (click)="calcRoute(result)" *ngFor="let result of searchResult">
+        {{result.description}}
+      </ion-item>
+    </ion-list>
+      <div #map id="map">
      </div>
    <ion-button class="start-ride" expand="full" (click)="onPickLocation()">
      Start ride
