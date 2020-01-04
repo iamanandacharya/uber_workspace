@@ -1,0 +1,39 @@
+
+<ion-header>
+  <ion-row>
+    <ion-col text-start padding-top>
+      <ion-title>Google Map</ion-title>
+    </ion-col>
+    <ion-col text-end>
+      <ion-button (click)="loadMap()" shape="round" fill="outline">
+        <ion-icon slot="start" name="locate"></ion-icon>
+        Where I Am
+      </ion-button>
+    </ion-col>
+  </ion-row>
+</ion-header>
+<ion-content>
+ <ion-item>
+   <ion-text>
+   Pickup Location: 
+   <ion-text *ngIf="fetchCurrentAddress">
+     {{currentAddress}} 
+    </ion-text> 
+    <ion-text *ngIf="fetchPickupAddress"> {{pickupAddress}} </ion-text>
+   </ion-text>
+ </ion-item>
+ <ion-item>
+  <ion-text>
+  destination Address:  {{destinationAddress}}
+  </ion-text>
+</ion-item>
+  <div class="map-wrapper">
+      <ion-searchbar  showCancelButton="always"></ion-searchbar>
+    <div #map id="map">
+     </div>
+   <ion-button class="start-ride" expand="full" (click)="onPickLocation()">
+     Start ride
+   </ion-button>
+  </div>
+ 
+</ion-content>
